@@ -1,0 +1,25 @@
+group 'com.github.upthewaterspout.jpfgadle'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+
+
+plugins {
+    id "java-gradle-plugin"
+//    id 'maven-publish'
+
+}
+
+sourceCompatibility = 1.8
+
+gradlePlugin {
+    plugins {
+        jpf {
+            id = "com.github.upthewaterspout.jpfgradle"
+            implementationClass = "com.github.upthewaterspout.jpfgradle.JpfPlugin"
+        }
+    }
+}
+
