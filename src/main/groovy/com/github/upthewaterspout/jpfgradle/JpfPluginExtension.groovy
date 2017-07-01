@@ -11,8 +11,8 @@ class JpfPluginExtension {
     def JpfPluginExtension(Project project) {
         installDir = project.property(String)
         downloadURL = project.property(String)
-        installDir.set('.jpf')
-        downloadURL.set('http://babelfish.arc.nasa.gov/trac/jpf/attachment/wiki/projects/jpf-core/jpf-core-r32.zip')
+        installDir.set(new File(project.projectDir,'/.jpf').absolutePath)
+        downloadURL.set('https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip')
     }
 
     def getDownloadURLProvider() {
