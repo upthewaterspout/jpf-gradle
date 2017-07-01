@@ -2,6 +2,8 @@ package com.github.upthewaterspout.jpfgradle
 
 import org.apache.tools.ant.taskdefs.Get
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.TaskAction
 import org.gradle.wrapper.Download
@@ -10,20 +12,19 @@ import java.security.MessageDigest
 
 
 class Downloader extends DefaultTask {
-    String downloadURL
-    String parentDir
-    private File targetDir
+    Provider<String> downloadURL
+    Provider<String> parentDir
 
-    Downloader(String downloadURL, String parentDir) {
-        this.downloadURL = downloadURL;
-        this.parentDir = parentDir;
-        MessageDigest digest = MessageDigest.getInstance("SHA-256")
-        String downloadHash = digest.digest(downloadURL.getBytes("UTF-8")).encodeHex();
-        File targetDir = new File(parentDir, downloadHash.encodeHex())
+    Downloader() {
+        this.outputs.file(getDir())
     }
 
-    public File getDir() {
-        return targetDir;
+    public Closure<File> getDir() {
+        return {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256")
+            String downloadHash = digest.digest(downloadURL.get().getBytes("UTF-8")).encodeHex();
+            return new File(parentDir.get(), downloadHash)
+        };
     }
 
     /**
@@ -33,6 +34,7 @@ class Downloader extends DefaultTask {
     @TaskAction
     public File download() {
 
+        File targetDir = getDir().call()
         if(targetDir.exists()) {
             return targetDir;
         }
@@ -44,7 +46,7 @@ class Downloader extends DefaultTask {
 
         File tempDownload = File.createTempFile("jpfdownload-", ".tmp");
 
-        ant.get(src: downloadURL, dest: tempDownload)
+        ant.get(src: downloadURL.get(), dest: tempDownload)
         ant.unzip(src: tempDownload, dest: tmpDir)
         tempDownload.delete();
         tmpDir.renameTo(targetDir);
