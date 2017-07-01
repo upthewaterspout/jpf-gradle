@@ -1,18 +1,19 @@
+plugins {
+    id "java-gradle-plugin"
+////    id 'maven-publish'
+
+}
 group 'com.github.upthewaterspout.jpfgadle'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+//apply plugin: 'java-gradle-plugin'
 
 
 
-plugins {
-    id "java-gradle-plugin"
-//    id 'maven-publish'
 
-}
-
-sourceCompatibility = 1.8
+//sourceCompatibility = 1.8
 
 gradlePlugin {
     plugins {
@@ -23,3 +24,12 @@ gradlePlugin {
     }
 }
 
+dependencies {
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
