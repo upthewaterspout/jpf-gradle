@@ -11,18 +11,18 @@ import org.gradle.wrapper.Download
 import java.security.MessageDigest
 
 
-class Downloader extends DefaultTask {
+class DownloadJpfTask extends DefaultTask {
     Provider<String> downloadURL
     Provider<String> parentDir
 
-    Downloader() {
+    DownloadJpfTask() {
         this.outputs.file(getDir())
     }
 
     public Closure<File> getDir() {
         return {
             MessageDigest digest = MessageDigest.getInstance("SHA-256")
-            String downloadHash = digest.digest(downloadURL.get().getBytes("UTF-8")).encodeHex();
+            String downloadHash = digest.digest(downloadURL.get().getBytes("UTF-8")).encodeHex()
             return new File(parentDir.get(), downloadHash)
         };
     }
