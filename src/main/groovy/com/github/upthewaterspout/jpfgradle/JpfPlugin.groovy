@@ -19,7 +19,7 @@ class JpfPlugin implements Plugin<Project> {
             //TODO - allow configuration of jpf properties?
         }
         target.afterEvaluate {
-            target.dependencies.add("testCompile", target.files({downloaderTask + "/build/jpf.jar"}))
+            target.dependencies.add("testCompile", target.files({downloaderTask}))
         }
     }
 }

@@ -1,12 +1,8 @@
 package com.github.upthewaterspout.jpfgradle
 
-import org.apache.tools.ant.taskdefs.Get
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.TaskAction
-import org.gradle.wrapper.Download
 
 import java.security.MessageDigest
 
@@ -16,15 +12,19 @@ class DownloadJpfTask extends DefaultTask {
     Provider<String> parentDir
 
     DownloadJpfTask() {
-        this.outputs.file(getDir())
+        this.outputs.file(getJpfJar())
     }
 
-    public Closure<File> getDir() {
+    public Closure<File> getJpfJar() {
         return {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256")
-            String downloadHash = digest.digest(downloadURL.get().getBytes("UTF-8")).encodeHex()
-            return new File(parentDir.get(), downloadHash)
+            return new File(getDownloadDir(), "build/jpf.jar")
         };
+    }
+
+    public File getDownloadDir() {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256")
+        String downloadHash = digest.digest(downloadURL.get().getBytes("UTF-8")).encodeHex()
+        return new File(parentDir.get(), downloadHash)
     }
 
     /**
@@ -34,7 +34,7 @@ class DownloadJpfTask extends DefaultTask {
     @TaskAction
     public File download() {
 
-        File targetDir = getDir().call()
+        File targetDir = getDownloadDir()
         if(targetDir.exists()) {
             return targetDir;
         }
