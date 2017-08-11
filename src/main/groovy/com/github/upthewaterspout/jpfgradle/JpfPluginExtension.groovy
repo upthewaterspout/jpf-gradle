@@ -2,24 +2,33 @@ package com.github.upthewaterspout.jpfgradle
 
 import org.gradle.api.Project
 import org.gradle.api.provider.PropertyState
+import org.gradle.api.provider.Provider
 
 
 class JpfPluginExtension {
-    PropertyState<String> installDir
-    PropertyState<String> downloadURL
+    private final PropertyState<String> installDir
+    private final PropertyState<String> downloadUrl
 
     def JpfPluginExtension(Project project) {
         installDir = project.property(String)
-        downloadURL = project.property(String)
+        downloadUrl = project.property(String)
         installDir.set(new File(project.projectDir,'/.jpf').absolutePath)
-        downloadURL.set('https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip')
+        downloadUrl.set('https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip')
     }
 
-    def getDownloadURLProvider() {
-        return downloadURL;
+    public Provider<String> getDownloadUrlProvider() {
+        return downloadUrl;
     }
 
-    def getInstallDirProvider() {
+    public Provider<String> getInstallDirProvider() {
         return installDir;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl.set(downloadUrl)
+    }
+
+    public void setInstallDir(String installDir) {
+        this.installDir.set(installDir)
     }
 }

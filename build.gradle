@@ -1,19 +1,15 @@
 plugins {
     id "java-gradle-plugin"
+    id "de.undercouch.download" version "3.2.0"
 ////    id 'maven-publish'
-
 }
+import de.undercouch.gradle.tasks.download.Download
+
 group 'com.github.upthewaterspout.jpfgadle'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
-//apply plugin: 'java-gradle-plugin'
-
-
-
-
-//sourceCompatibility = 1.8
 
 gradlePlugin {
     plugins {
@@ -32,4 +28,21 @@ dependencies {
 
 repositories {
     mavenCentral()
+}
+
+
+//Download JPF into our build directory for testing
+//We use this downloaded version in our tests so that
+//each test doesn't go back and download JPF every time
+def jpfDownloadDir = "$buildDir/generated-resources/test"
+
+sourceSets {
+    test {
+        output.dir(jpfDownloadDir, builtBy: 'downloadJpf')
+    }
+}
+
+task downloadJpf(type: Download) {
+    src 'https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip'
+    dest new File(jpfDownloadDir, "jpf-core.zip")
 }
