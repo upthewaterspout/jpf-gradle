@@ -14,7 +14,7 @@ apply plugin: 'java'
 gradlePlugin {
     plugins {
         jpf {
-            id = "com.github.upthewaterspout.jpfgradle"
+            id = "com.github.upthewaterspout.jpf"
             implementationClass = "com.github.upthewaterspout.jpfgradle.JpfPlugin"
         }
     }

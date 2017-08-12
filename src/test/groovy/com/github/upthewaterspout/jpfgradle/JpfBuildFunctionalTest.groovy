@@ -40,7 +40,7 @@ class JpfBuildFunctionalTest extends Specification {
     private File defaultBuildFile() {
         buildFile << """
             plugins {
-                id 'com.github.upthewaterspout.jpfgradle'
+                id 'com.github.upthewaterspout.jpf'
             }
 
             apply plugin: 'java'
