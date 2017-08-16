@@ -24,8 +24,10 @@ class JpfPlugin implements Plugin<Project> {
         def propertyFileTask = project.tasks.create('generateJpfProperties', PropertyFileGeneratorTask) {
             //TODO - allow configuration of jpf properties?
         }
+        propertyFileTask.dependsOn(downloaderTask)
 
-//        project.getPlugins().apply(JavaPlugin.class);
+        project.getPlugins().apply(JavaPlugin.class);
+        project.task(":test").dependsOn(propertyFileTask)
 //        JavaPluginConvention javaConvention =
 //                project.getConvention().getPlugin(JavaPluginConvention.class);
 //        SourceSet test = javaConvention.getSourceSets().getByName(SourceSet.TEST_SOURCE_SET_NAME);
