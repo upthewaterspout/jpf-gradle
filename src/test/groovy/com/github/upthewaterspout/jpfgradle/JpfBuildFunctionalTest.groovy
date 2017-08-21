@@ -60,8 +60,7 @@ class JpfBuildFunctionalTest extends Specification {
         }
         toList(props.get("classpath")) == getExpectedClasspath();
 
-        //This assertion currently fails because we have no actual source files
-        //toList(props.get("sourcepath")) == getExpectedSourcepath();
+        toList(props.get("sourcepath")) == getExpectedSourcepath();
     }
 
     def toList(final String path) {

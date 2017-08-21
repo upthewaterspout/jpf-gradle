@@ -48,7 +48,7 @@ public class PropertyFileGeneratorTask extends DefaultTask {
     String classpath = sourceSet.getRuntimeClasspath().getAsPath();
     properties.put("classpath", classpath);
 
-    String sourcepath = sourceSet.getAllJava().getAsPath();
+    String sourcepath = sourceSet.getJava().getAsPath();
     properties.put("sourcepath", sourcepath);
   }
 }
