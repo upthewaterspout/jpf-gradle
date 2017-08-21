@@ -23,7 +23,8 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class JpfBuildFunctionalTest extends Specification {
-    @Rule final TemporaryFolder testProjectDir = new TemporaryFolder()
+    @Rule
+    final TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
     File sourceFile
     File testFile
@@ -178,10 +179,10 @@ class JpfBuildFunctionalTest extends Specification {
         String projectDirPath = projectDir.getAbsolutePath();
         String jpfJar = new FileNameFinder().getFileNames(projectDirPath, "**/jpf.jar").first();
         String[] dirs = [projectDirPath + "/build/classes/java/main",
-                       projectDirPath + "/build/resources/main",
-                       projectDirPath + "/build/classes/java/test",
-                       projectDirPath + "/build/resources/test",
-                       jpfJar];
+                         projectDirPath + "/build/resources/main",
+                         projectDirPath + "/build/classes/java/test",
+                         projectDirPath + "/build/resources/test",
+                         jpfJar];
         return Arrays.asList(dirs).sort()
     }
 

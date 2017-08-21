@@ -1,10 +1,7 @@
 package com.github.upthewaterspout.jpfgradle;
 
-import groovy.lang.Closure;
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 
 public class JpfPlugin implements Plugin<Project> {
@@ -12,13 +9,15 @@ public class JpfPlugin implements Plugin<Project> {
 
   @Override
   public void apply(final Project project) {
-    JpfPluginExtension extension = project.getExtensions().create(EXTENSION_NAME, JpfPluginExtension.class, project);
+    JpfPluginExtension
+        extension =
+        project.getExtensions().create(EXTENSION_NAME, JpfPluginExtension.class, project);
 
     DownloadJpfTask downloaderTask = project.getTasks()
-            .create("downloadJpf", DownloadJpfTask.class, task -> {
-                task.setDownloadUrl(extension.getDownloadUrlProvider());
-                task.setParentDir(extension.getInstallDirProvider());
-            });
+        .create("downloadJpf", DownloadJpfTask.class, task -> {
+          task.setDownloadUrl(extension.getDownloadUrlProvider());
+          task.setParentDir(extension.getInstallDirProvider());
+        });
 
     PropertyFileGeneratorTask propertyFileTask = project.getTasks()
         .create("generateJpfProperties", PropertyFileGeneratorTask.class);
@@ -26,8 +25,8 @@ public class JpfPlugin implements Plugin<Project> {
 
     project.getPlugins().apply(JavaPlugin.class);
     project.afterEvaluate(p -> {
-        project.getDependencies().add("testCompile", project.files(downloaderTask));
-        project.getTasks().getByName("test").dependsOn(propertyFileTask);
-      });
+      project.getDependencies().add("testCompile", project.files(downloaderTask));
+      project.getTasks().getByName("test").dependsOn(propertyFileTask);
+    });
   }
 }

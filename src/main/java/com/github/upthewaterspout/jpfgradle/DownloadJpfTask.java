@@ -1,6 +1,5 @@
 package com.github.upthewaterspout.jpfgradle;
 
-import groovy.lang.Closure;
 import org.codehaus.groovy.runtime.EncodingGroovyMethods;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.DefaultTask;
@@ -14,20 +13,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Callable;
 
 public class DownloadJpfTask extends DefaultTask {
+  private PropertyState<String> downloadUrl;
+  private PropertyState<String> parentDir;
+
   public DownloadJpfTask() {
     downloadUrl = getProject().property(String.class);
     parentDir = getProject().property(String.class);
-    this.getOutputs().file(getJpfJar());
-  }
-
-  public void setDownloadUrl(final Provider<String> downloadUrl) {
-    this.downloadUrl.set(downloadUrl);
-  }
-
-  public void setParentDir(final Provider<String> parentDir) {
-    this.parentDir.set(parentDir);
+    getOutputs().file((Callable) () -> getJpfJar());
   }
 
   @Input
@@ -35,31 +30,30 @@ public class DownloadJpfTask extends DefaultTask {
     return downloadUrl.get();
   }
 
+  public void setDownloadUrl(final Provider<String> downloadUrl) {
+    this.downloadUrl.set(downloadUrl);
+  }
+
   @Input
   public String getParentDir() {
     return parentDir.get();
   }
 
-  public Closure<File> getJpfJar() {
-    return new Closure<File>(this, this) {
-      public File doCall(Object it) {
-        return new File(getDownloadDir(), "jpf-core/build/jpf.jar");
-      }
-
-      public File doCall() {
-        return doCall(null);
-      }
-
-    };
+  public void setParentDir(final Provider<String> parentDir) {
+    this.parentDir.set(parentDir);
   }
 
-  public File getDownloadDir() {
+  private File getJpfJar() {
+    return new File(getDownloadDir(), "jpf-core/build/jpf.jar");
+  }
+
+  private File getDownloadDir() {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] hashBytes = digest.digest(downloadUrl.get().getBytes("UTF-8"));
       String downloadHash = EncodingGroovyMethods.encodeHex(hashBytes).toString();
       return new File(parentDir.get(), downloadHash);
-    } catch(NoSuchAlgorithmException | UnsupportedEncodingException e) {
+    } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
       throw new IllegalStateException(e);
     }
   }
@@ -87,7 +81,4 @@ public class DownloadJpfTask extends DefaultTask {
 
     return targetDir;
   }
-
-  private PropertyState<String> downloadUrl;
-  private PropertyState<String> parentDir;
 }
