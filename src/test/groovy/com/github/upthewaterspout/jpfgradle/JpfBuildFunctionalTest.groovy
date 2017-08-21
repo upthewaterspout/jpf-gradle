@@ -7,10 +7,11 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-
 class JpfBuildFunctionalTest extends Specification {
     @Rule final TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
+    File sourceFile
+    File testFile
     String jpfUrl
 
     def setup() {
@@ -23,14 +24,9 @@ class JpfBuildFunctionalTest extends Specification {
         defaultBuildFile()
 
         when:
-        BuildResult result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('--stacktrace', 'test')
-                .withPluginClasspath()
-                .build()
+        BuildResult result = executeTask('test')
 
         then:
-        System.out.println("OUTPUT=" + result.output)
         result.task(':downloadJpf').outcome == TaskOutcome.SUCCESS
         new File(testProjectDir.getRoot(), ".jpf").exists()
     }
@@ -38,29 +34,78 @@ class JpfBuildFunctionalTest extends Specification {
     def "Adding the jpf plugin generates a jpf.properties file with the correct source and classpath"() {
         given:
         defaultBuildFile()
+        addSampleSourceFile();
+        addJPFTest()
 
         when:
-        BuildResult result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('--stacktrace', 'generateJpfProperties')
-                .withPluginClasspath()
-                .build()
+        BuildResult result = executeTask('generateJpfProperties')
 
         then:
-        System.out.println("OUTPUT=" + result.output)
         result.task(':generateJpfProperties').outcome == TaskOutcome.SUCCESS
+        Properties props = getJpfProperties()
+        toList(props.get("classpath")) == getExpectedClasspath();
+        toList(props.get("sourcepath")) == getExpectedSourcepath();
+    }
+
+    def "Project with test using jpf successfully builds and runs"() {
+        given:
+        buildFileWithJUnit()
+        addJPFTest()
+
+        when:
+        BuildResult result = executeTask('test')
+
+        then:
+        result.task(':test').outcome == TaskOutcome.SUCCESS
+    }
+
+    private void addJPFTest() {
+        testFile = newProjectFile("src/test/java/MinimalJPFTest.java")
+        testFile << """
+            import org.junit.Test;
+
+            import gov.nasa.jpf.util.test.TestJPF;
+            import gov.nasa.jpf.vm.Verify;
+
+            public class MinimalJPFTest extends TestJPF {
+
+              @Test
+              public void test() throws InterruptedException {
+                if(verifyNoPropertyViolation()) {
+                  Verify.incrementCounter(0);
+                }
+                assertEquals(1, Verify.getCounter(0));
+              }
+            }
+        """
+    }
+
+    private void addSampleSourceFile() {
+        sourceFile = newProjectFile("src/main/java/SampleSourceClass.java")
+        sourceFile << """
+            public class SampleSourceClass {
+            }
+        """
+    }
+
+    private final File newProjectFile(String relativePath) {
+        File file = new File(testProjectDir.getRoot().getAbsolutePath() + "/" + relativePath);
+        file.getParentFile().mkdirs();
+        return file;
+    }
+
+
+    private Properties getJpfProperties() {
         File propertiesFile = new File(testProjectDir.getRoot(), "jpf.properties");
         propertiesFile.exists();
         Properties props = new Properties();
-        FileReader reader  = new FileReader(propertiesFile);
+        FileReader reader = new FileReader(propertiesFile);
         try {
-           props.load(reader)
+            props.load(reader)
         } finally {
             reader.close();
         }
-        toList(props.get("classpath")) == getExpectedClasspath();
-
-        toList(props.get("sourcepath")) == getExpectedSourcepath();
+        props
     }
 
     def toList(final String path) {
@@ -70,7 +115,7 @@ class JpfBuildFunctionalTest extends Specification {
     private File defaultBuildFile() {
         buildFile << """
             plugins {
-                id 'com.github.upthewaterspout.jpf'
+              id 'com.github.upthewaterspout.jpf'
             }
 
             apply plugin: 'java'
@@ -79,6 +124,38 @@ class JpfBuildFunctionalTest extends Specification {
               downloadUrl='$jpfUrl'
             }
         """
+    }
+
+    private File buildFileWithJUnit() {
+        buildFile << """
+            plugins {
+              id 'com.github.upthewaterspout.jpf'
+            }
+
+            apply plugin: 'java'
+
+            repositories {
+              jcenter()
+            }
+
+            jpf {
+              downloadUrl='$jpfUrl'
+            }
+
+            dependencies {
+              testCompile 'junit:junit:4.12'
+            }
+        """
+    }
+
+    private BuildResult executeTask(String task) {
+        BuildResult result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments('--stacktrace', task)
+                .withPluginClasspath()
+                .build()
+        System.out.println("OUTPUT=" + result.output)
+        return result
     }
 
     private List<String> getExpectedClasspath() {
@@ -93,11 +170,11 @@ class JpfBuildFunctionalTest extends Specification {
         return Arrays.asList(dirs).sort()
     }
 
-    private String getExpectedSourcepath() {
+    private List<String> getExpectedSourcepath() {
         File projectDir = testProjectDir.getRoot();
         String projectDirPath = projectDir.getAbsolutePath();
-        String[] dirs = [projectDirPath + "build/src/main/java",
-                         projectDirPath + "build/src/test/java"];
+        String[] dirs = [projectDirPath + "/src/main/java",
+                         projectDirPath + "/src/test/java"];
         return Arrays.asList(dirs).sort()
     }
 }

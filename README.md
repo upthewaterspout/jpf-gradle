@@ -15,7 +15,6 @@ can run a test that uses jpf-core, see jpf-gradle-sample.
 
 ## TODO
 
-- Add a end to end integration test that actually runs a jpf test
 - Convert plugin code from groovy to java
 - Mirror jpf-core somewhere
 - Allow the user to configure the source set to target
