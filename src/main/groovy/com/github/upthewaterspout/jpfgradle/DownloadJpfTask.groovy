@@ -39,7 +39,7 @@ class DownloadJpfTask extends DefaultTask {
 
     public Closure<File> getJpfJar() {
         return {
-            return new File(getDownloadDir(), "build/jpf.jar")
+            return new File(getDownloadDir(), "jpf-core/build/jpf.jar")
         };
     }
 
