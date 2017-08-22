@@ -18,19 +18,26 @@ package com.github.upthewaterspout.jpfgradle;
 import org.gradle.api.Project;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.SourceSet;
 
 import java.io.File;
 
 public class JpfPluginExtension {
+  public static final String SOURCE_SET_NAME = SourceSet.TEST_SOURCE_SET_NAME;
   private final PropertyState<String> installDir;
   private final PropertyState<String> downloadUrl;
+  private final PropertyState<String> sourceSet;
 
   public JpfPluginExtension(Project project) {
     installDir = project.property(String.class);
-    downloadUrl = project.property(String.class);
     installDir.set(new File(project.getProjectDir(), "/.jpf").getAbsolutePath());
+
+    downloadUrl = project.property(String.class);
     downloadUrl.set(
         "https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip");
+
+    sourceSet = project.property(String.class);
+    sourceSet.set(SOURCE_SET_NAME);
   }
 
   public Provider<String> getDownloadUrlProvider() {
@@ -41,12 +48,20 @@ public class JpfPluginExtension {
     return installDir;
   }
 
+  public Provider<String> getSourceSet() {
+    return sourceSet;
+  }
+
   public void setDownloadUrl(String downloadUrl) {
     this.downloadUrl.set(downloadUrl);
   }
 
   public void setInstallDir(String installDir) {
     this.installDir.set(installDir);
+  }
+
+  public void setSourceSet(String sourceSet) {
+    this.sourceSet.set(sourceSet);
   }
 
 }
