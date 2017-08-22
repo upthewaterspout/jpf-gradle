@@ -47,7 +47,6 @@ repositories {
     mavenCentral()
 }
 
-
 //Download JPF into our build directory for testing
 //We use this downloaded version in our tests so that
 //each test doesn't go back and download JPF every time
@@ -61,15 +60,17 @@ sourceSets {
 
 rat {
     excludes = ['build/**',
-            '.gradle/**',
-            '.jpf/**',
-            '.idea/**',
-            'README.md',
-            'gradle/**',
-            'gradlew*']
+                '.gradle/**',
+                '.jpf/**',
+                '.idea/**',
+                'README.md',
+                'gradle/**',
+                'gradlew*']
 }
 
 task downloadJpf(type: Download) {
     src 'https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip'
-    dest new File(jpfDownloadDir, "jpf-core.zip")
+    File destFile = new File(jpfDownloadDir, "jpf-core.zip")
+    dest destFile
+    onlyIf { !destFile.exists() }
 }
