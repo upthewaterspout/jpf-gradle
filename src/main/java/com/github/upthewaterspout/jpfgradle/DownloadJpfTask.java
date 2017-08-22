@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.provider.PropertyState;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -43,10 +44,12 @@ public class DownloadJpfTask extends DefaultTask {
     this.parentDir.set(parentDir);
   }
 
+  @Internal
   private File getJpfJar() {
     return new File(getDownloadDir(), "jpf-core/build/jpf.jar");
   }
 
+  @Internal
   private File getDownloadDir() {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
