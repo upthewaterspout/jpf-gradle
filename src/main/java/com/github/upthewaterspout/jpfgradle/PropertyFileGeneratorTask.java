@@ -31,21 +31,29 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class PropertyFileGeneratorTask extends DefaultTask {
   private final File outputFile;
   private PropertyState<String> sourceSetProperty;
+  private PropertyState<Map> propertiesProperty;
 
   public PropertyFileGeneratorTask() {
     outputFile = new File(getProject().getRootDir(), "jpf.properties");
     sourceSetProperty = getProject().property(String.class);
+    propertiesProperty = getProject().property(Map.class);
   }
 
   @Input
   public void setSourceSet(Provider<String> sourceSets) {
     this.sourceSetProperty.set(sourceSets);
+  }
+
+  @Input
+  public void setProperties(Provider<Map> properties) {
+    this.propertiesProperty.set(properties);
   }
 
   @OutputFile
@@ -56,6 +64,7 @@ public class PropertyFileGeneratorTask extends DefaultTask {
   @TaskAction
   public void generateJpfProperties() throws IOException {
     Properties properties = new Properties();
+    properties.putAll(propertiesProperty.get());
     setClasspathAndSourcePath(properties);
 
     try (FileOutputStream fos = new FileOutputStream(outputFile)) {

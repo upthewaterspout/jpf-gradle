@@ -5,11 +5,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.testing.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class JpfPlugin implements Plugin<Project> {
   public static final String EXTENSION_NAME = "jpf";
@@ -36,7 +32,8 @@ public class JpfPlugin implements Plugin<Project> {
                                                         final DownloadJpfTask downloaderTask) {
     PropertyFileGeneratorTask propertyFileTask = project.getTasks()
         .create("generateJpfProperties", PropertyFileGeneratorTask.class, task -> {
-          task.setSourceSet(extension.getSourceSet());
+          task.setSourceSet(extension.getSourceSetProvider());
+          task.setProperties(extension.getPropertiesProvider());
         });
     propertyFileTask.dependsOn(downloaderTask);
     return propertyFileTask;
@@ -59,7 +56,7 @@ public class JpfPlugin implements Plugin<Project> {
         project.getConvention().getPlugin(JavaPluginConvention.class);
 
     project.afterEvaluate(p -> {
-      SourceSet sourceSet = javaConvention.getSourceSets().getByName(extension.getSourceSet().get());
+      SourceSet sourceSet = javaConvention.getSourceSets().getByName(extension.getSourceSetProvider().get());
       project.getDependencies().add(sourceSet.getCompileConfigurationName(), project.files(downloaderTask));
 
       project.getTasks().withType(Test.class).forEach(task -> task.dependsOn(propertyFileTask));

@@ -3,9 +3,6 @@
 This is a gradle plugin that makes it easier to use [Java Path Finder](https://babelfish.arc.nasa.gov/trac/jpf) (JPF), install it,
 from within a gradle project, without having to install JPF our configure a jpf.properties with your projects classpath.
 
-This plugin is in the early stages of development.
-
-
 ##Usage
 Add this this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
 
@@ -35,15 +32,20 @@ plugins {
 }
 
 jpf {
+    //The version of jpf to download
     downloadUrl='https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip'
+
+    //The directory to install jpf into
     installDir=".jpf"
+
+    //Additional properties to add to jpf.properties
+    properties=['cg.enumerate_random': 'true', 'race.exclude': 'java.*']
+
 }
 ```
 
 ## TODO
 
 - Mirror jpf-core somewhere
-- Allow the user to configure the source set to target
-- Allow configuration of other jpf properties
 - Allow downloading other jpf components
 - Figure out how to configure the classpath to use IDE classes directories, if possible.

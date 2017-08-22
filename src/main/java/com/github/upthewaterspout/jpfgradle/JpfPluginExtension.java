@@ -21,12 +21,15 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Map;
 
 public class JpfPluginExtension {
   public static final String SOURCE_SET_NAME = SourceSet.TEST_SOURCE_SET_NAME;
   private final PropertyState<String> installDir;
   private final PropertyState<String> downloadUrl;
   private final PropertyState<String> sourceSet;
+  private final PropertyState<Map> properties;
 
   public JpfPluginExtension(Project project) {
     installDir = project.property(String.class);
@@ -38,6 +41,9 @@ public class JpfPluginExtension {
 
     sourceSet = project.property(String.class);
     sourceSet.set(SOURCE_SET_NAME);
+
+    properties = project.property(Map.class);
+    properties.set(Collections.emptyMap());
   }
 
   public Provider<String> getDownloadUrlProvider() {
@@ -48,8 +54,12 @@ public class JpfPluginExtension {
     return installDir;
   }
 
-  public Provider<String> getSourceSet() {
+  public Provider<String> getSourceSetProvider() {
     return sourceSet;
+  }
+
+  public Provider<Map> getPropertiesProvider() {
+    return properties;
   }
 
   public void setDownloadUrl(String downloadUrl) {
@@ -62,6 +72,10 @@ public class JpfPluginExtension {
 
   public void setSourceSet(String sourceSet) {
     this.sourceSet.set(sourceSet);
+  }
+
+  public void setProperties(Map properties) {
+    this.properties.set(properties);
   }
 
 }

@@ -88,6 +88,24 @@ class JpfBuildFunctionalTest extends Specification {
         toList(props.get("sourcepath")) == getExpectedTestSourcepath()
     }
 
+    def "Custom properties in configuration are added to jpf.properties"() {
+        given:
+        buildFileWithCustomProperties()
+        addSampleSourceFile();
+        addJPFTest()
+
+        when:
+        BuildResult result = executeTask('generateJpfProperties')
+
+        then:
+        result.task(':generateJpfProperties').outcome == TaskOutcome.SUCCESS
+        Properties props = getJpfProperties()
+        props.get("a") == 'b'
+        props.get("x") == 'y'
+        toList(props.get("classpath")) == getClasspath(testClasses)
+        toList(props.get("sourcepath")) == getExpectedTestSourcepath()
+    }
+
     def "Project with test using jpf successfully builds and runs"() {
         given:
         buildFileWithJUnit()
@@ -178,6 +196,21 @@ class JpfBuildFunctionalTest extends Specification {
             jpf {
               downloadUrl = '$jpfUrl'
               sourceSet = 'main'
+            }
+        """
+    }
+
+    private File buildFileWithCustomProperties() {
+        buildFile << """
+            plugins {
+              id 'com.github.upthewaterspout.jpf'
+            }
+
+            apply plugin: 'java'
+
+            jpf {
+              downloadUrl = '$jpfUrl'
+              properties = ['x' : 'y', 'a' : 'b']
             }
         """
     }
