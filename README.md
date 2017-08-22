@@ -1,24 +1,49 @@
-# jpfgradle
+# Java Path Finder Gradle Plugin
 
-This is the start of a gradle plugin that will download jpf, install it,
-create a jpf configuration file and add jpf to the classpath of the test
-target.
+This is a gradle plugin that makes it easier to use [Java Path Finder](https://babelfish.arc.nasa.gov/trac/jpf) (JPF), install it,
+from within a gradle project, without having to install JPF our configure a jpf.properties with your projects classpath.
 
-This is in the early stages of development.
+This plugin is in the early stages of development.
 
-## Current Status
 
-The project does currently download and install jpf-core under the .jpf
-directory in the project's directory. jpf.jar is added to the test classpath,
-and a jpf.properties file is generated. A simple test project using this plugin
-can run a test that uses jpf-core, see jpf-gradle-sample.
+##Usage
+Add this this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
+
+
+By default this plugin will download JPF
+to a .jpf directory within the root of your project, add jpf.jar to your
+testCompile classpath, and generate a jpf.properties file that contains
+classpath and sourcepath variables generated from your projects configuration
+
+###Example build file
+
+See the [jpf-gradle-sample](https://github.com/upthewaterspout/jpf-gradle-sample) project for an an example
+of how to use this plugin in your project.
+```
+plugins {
+  id "com.github.upthewaterspout.jpf" version "0.1"
+}
+
+jpf {
+}
+```
+
+####Optional Configuration
+```
+plugins {
+  id "com.github.upthewaterspout.jpf" version "0.1"
+}
+
+jpf {
+    downloadUrl='https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip'
+    installDir=".jpf"
+}
+```
 
 ## TODO
 
-- Convert plugin code from groovy to java
 - Mirror jpf-core somewhere
 - Allow the user to configure the source set to target
 - Allow configuration of other jpf properties
-- Upload plugin to gradle plugin directory
 - Allow downloading other jpf components
 - Figure out how to configure the classpath to use IDE classes directories, if possible.
