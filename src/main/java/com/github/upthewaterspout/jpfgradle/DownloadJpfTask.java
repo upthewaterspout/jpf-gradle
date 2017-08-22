@@ -1,5 +1,6 @@
 package com.github.upthewaterspout.jpfgradle;
 
+import com.github.upthewaterspout.jpfgradle.internal.AntHelper;
 import org.codehaus.groovy.runtime.EncodingGroovyMethods;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.DefaultTask;
@@ -16,6 +17,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Callable;
 
+/**
+ * Task that downloads a a jpf zip file and  extracts it.
+ * If jpf is already extracted, this task does nothing.
+ *
+ * The task creates a directory based on the hash of the download url,
+ * so if the download url changes it will create a new directory.
+ */
 public class DownloadJpfTask extends DefaultTask {
   private PropertyState<String> downloadUrl;
   private PropertyState<String> parentDir;
@@ -26,6 +34,10 @@ public class DownloadJpfTask extends DefaultTask {
     getOutputs().file((Callable) () -> getJpfJar());
   }
 
+  /**
+   * The URL to download jpf from. Must point to a zip file of jpf-core that
+   * has been built.
+   */
   @Input
   public String getDownloadUrl() {
     return downloadUrl.get();
@@ -35,6 +47,9 @@ public class DownloadJpfTask extends DefaultTask {
     this.downloadUrl.set(downloadUrl);
   }
 
+  /**
+   * The target directory to download jpf into
+   */
   @Input
   public String getParentDir() {
     return parentDir.get();
@@ -49,6 +64,9 @@ public class DownloadJpfTask extends DefaultTask {
     return new File(getDownloadDir(), "jpf-core/build/jpf.jar");
   }
 
+  /**
+   * Create a directory based on the hash of the download url to store the unzipped installation
+   */
   @Internal
   private File getDownloadDir() {
     try {
@@ -67,19 +85,24 @@ public class DownloadJpfTask extends DefaultTask {
   @TaskAction
   public File download() throws IOException {
 
+    //Do nothing if we've already downloaded and extracted jpf
     File targetDir = getDownloadDir();
     if (targetDir.exists()) {
       return targetDir;
     }
 
+    //Download the jpf zip to a temporary file
+    File tempDownload = File.createTempFile("jpfdownload-", ".tmp");
+    tempDownload.deleteOnExit();
+    AntHelper.get(downloadUrl.get(), tempDownload);
+
+    //Unzip to a temporary directory
     File tmpDir = new File(targetDir.getAbsolutePath() + ".tmp");
     ResourceGroovyMethods.deleteDir(tmpDir);
-
-    File tempDownload = File.createTempFile("jpfdownload-", ".tmp");
-
-    AntHelper.get(downloadUrl.get(), tempDownload);
     AntHelper.unzip(tempDownload, tmpDir);
     tempDownload.delete();
+
+    //Rename the temporary directory to the actual directory
     tmpDir.renameTo(targetDir);
 
     return targetDir;

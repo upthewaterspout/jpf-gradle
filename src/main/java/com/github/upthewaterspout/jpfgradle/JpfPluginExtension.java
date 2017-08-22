@@ -24,6 +24,9 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Configuration extension for jpf configuration options
+ */
 public class JpfPluginExtension {
   public static final String SOURCE_SET_NAME = SourceSet.TEST_SOURCE_SET_NAME;
   private final PropertyState<String> installDir;

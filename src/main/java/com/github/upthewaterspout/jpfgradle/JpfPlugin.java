@@ -7,6 +7,9 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.testing.Test;
 
+/**
+ * Plugin that downloads and configuration Java Path Finder (JPF)
+ */
 public class JpfPlugin implements Plugin<Project> {
   public static final String EXTENSION_NAME = "jpf";
 
@@ -48,6 +51,11 @@ public class JpfPlugin implements Plugin<Project> {
           });
   }
 
+  /**
+   * Add dependencies to the source set compile task and to test tasks
+   * so that jpf will be downloaded and the properties file will be generated
+   * when compiling and runing tests.
+   */
   private void addDependenciesToJavaTasks(final Project project, final JpfPluginExtension extension,
                                           final DownloadJpfTask downloaderTask,
                                           final PropertyFileGeneratorTask propertyFileTask) {

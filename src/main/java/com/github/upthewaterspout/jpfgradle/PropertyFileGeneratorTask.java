@@ -35,6 +35,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+/**
+ * Task to generate a jpf.properties file based on the configuration
+ * of the gradle project
+ */
 public class PropertyFileGeneratorTask extends DefaultTask {
   private final File outputFile;
   private PropertyState<String> sourceSetProperty;
@@ -62,6 +66,7 @@ public class PropertyFileGeneratorTask extends DefaultTask {
   }
 
   @TaskAction
+  @SuppressWarnings("unchecked")
   public void generateJpfProperties() throws IOException {
     Properties properties = new Properties();
     properties.putAll(propertiesProperty.get());
