@@ -3,7 +3,7 @@
 This is a gradle plugin that makes it easier to use [Java Path Finder](https://babelfish.arc.nasa.gov/trac/jpf) (JPF), install it,
 from within a gradle project, without having to install JPF our configure a jpf.properties with your projects classpath.
 
-##Usage
+## Usage
 Add this this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
 
 
@@ -12,7 +12,7 @@ to a .jpf directory within the root of your project, add jpf.jar to your
 testCompile classpath, and generate a jpf.properties file that contains
 classpath and sourcepath variables generated from your projects configuration
 
-###Example build file
+### Example build file
 
 See the [jpf-gradle-sample](https://github.com/upthewaterspout/jpf-gradle-sample) project for an an example
 of how to use this plugin in your project.
@@ -25,7 +25,7 @@ jpf {
 }
 ```
 
-####Optional Configuration
+#### Optional Configuration
 ```
 plugins {
   id "com.github.upthewaterspout.jpf" version "0.1"
