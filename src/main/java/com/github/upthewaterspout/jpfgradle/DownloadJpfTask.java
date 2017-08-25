@@ -4,8 +4,6 @@ import com.github.upthewaterspout.jpfgradle.internal.AntHelper;
 import org.codehaus.groovy.runtime.EncodingGroovyMethods;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.provider.PropertyState;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
@@ -16,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
  * Task that downloads a a jpf zip file and  extracts it.
@@ -25,12 +24,10 @@ import java.util.concurrent.Callable;
  * so if the download url changes it will create a new directory.
  */
 public class DownloadJpfTask extends DefaultTask {
-  private PropertyState<String> downloadUrl;
-  private PropertyState<String> parentDir;
+  private Property<String> downloadUrl = new Property<String>();
+  private Property<String> parentDir = new Property<String>();
 
   public DownloadJpfTask() {
-    downloadUrl = getProject().property(String.class);
-    parentDir = getProject().property(String.class);
     getOutputs().file((Callable) () -> getJpfJar());
   }
 
@@ -43,7 +40,7 @@ public class DownloadJpfTask extends DefaultTask {
     return downloadUrl.get();
   }
 
-  public void setDownloadUrl(final Provider<String> downloadUrl) {
+  public void setDownloadUrl(final Supplier<String> downloadUrl) {
     this.downloadUrl.set(downloadUrl);
   }
 
@@ -55,7 +52,7 @@ public class DownloadJpfTask extends DefaultTask {
     return parentDir.get();
   }
 
-  public void setParentDir(final Provider<String> parentDir) {
+  public void setParentDir(final Supplier<String> parentDir) {
     this.parentDir.set(parentDir);
   }
 

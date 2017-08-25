@@ -15,25 +15,24 @@
  */
 package com.github.upthewaterspout.jpfgradle;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.provider.PropertyState;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.TaskAction;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.TaskAction;
 
 /**
  * Task to generate a jpf.properties file based on the configuration
@@ -41,22 +40,20 @@ import java.util.stream.Collectors;
  */
 public class PropertyFileGeneratorTask extends DefaultTask {
   private final File outputFile;
-  private PropertyState<String> sourceSetProperty;
-  private PropertyState<Map> propertiesProperty;
+  private Property<String> sourceSetProperty = new Property<String>();
+  private Property<Map> propertiesProperty = new Property<Map>();
 
   public PropertyFileGeneratorTask() {
     outputFile = new File(getProject().getRootDir(), "jpf.properties");
-    sourceSetProperty = getProject().property(String.class);
-    propertiesProperty = getProject().property(Map.class);
   }
 
   @Input
-  public void setSourceSet(Provider<String> sourceSets) {
+  public void setSourceSet(Supplier<String> sourceSets) {
     this.sourceSetProperty.set(sourceSets);
   }
 
   @Input
-  public void setProperties(Provider<Map> properties) {
+  public void setProperties(Supplier<Map> properties) {
     this.propertiesProperty.set(properties);
   }
 

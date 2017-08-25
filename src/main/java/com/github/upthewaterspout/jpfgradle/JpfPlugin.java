@@ -35,8 +35,8 @@ public class JpfPlugin implements Plugin<Project> {
                                                         final DownloadJpfTask downloaderTask) {
     PropertyFileGeneratorTask propertyFileTask = project.getTasks()
         .create("generateJpfProperties", PropertyFileGeneratorTask.class, task -> {
-          task.setSourceSet(extension.getSourceSetProvider());
-          task.setProperties(extension.getPropertiesProvider());
+          task.setSourceSet(extension.getSourceSetSupplier());
+          task.setProperties(extension.getPropertiesSupplier());
         });
     propertyFileTask.dependsOn(downloaderTask);
     return propertyFileTask;
@@ -46,8 +46,8 @@ public class JpfPlugin implements Plugin<Project> {
                                           final JpfPluginExtension extension) {
     return project.getTasks()
           .create("downloadJpf", DownloadJpfTask.class, task -> {
-            task.setDownloadUrl(extension.getDownloadUrlProvider());
-            task.setParentDir(extension.getInstallDirProvider());
+            task.setDownloadUrl(extension.getDownloadUrlSupplier());
+            task.setParentDir(extension.getInstallDirSupplier());
           });
   }
 
@@ -64,7 +64,7 @@ public class JpfPlugin implements Plugin<Project> {
         project.getConvention().getPlugin(JavaPluginConvention.class);
 
     project.afterEvaluate(p -> {
-      SourceSet sourceSet = javaConvention.getSourceSets().getByName(extension.getSourceSetProvider().get());
+      SourceSet sourceSet = javaConvention.getSourceSets().getByName(extension.getSourceSetSupplier().get());
       project.getDependencies().add(sourceSet.getCompileConfigurationName(), project.files(downloaderTask));
 
       project.getTasks().withType(Test.class).forEach(task -> task.dependsOn(propertyFileTask));

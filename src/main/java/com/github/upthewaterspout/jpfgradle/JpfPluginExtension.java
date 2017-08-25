@@ -15,53 +15,48 @@
  */
 package com.github.upthewaterspout.jpfgradle;
 
-import org.gradle.api.Project;
-import org.gradle.api.provider.PropertyState;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.SourceSet;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
+
+import org.gradle.api.Project;
+import org.gradle.api.tasks.SourceSet;
 
 /**
  * Configuration extension for jpf configuration options
  */
 public class JpfPluginExtension {
   public static final String SOURCE_SET_NAME = SourceSet.TEST_SOURCE_SET_NAME;
-  private final PropertyState<String> installDir;
-  private final PropertyState<String> downloadUrl;
-  private final PropertyState<String> sourceSet;
-  private final PropertyState<Map> properties;
+  private final Property<String> installDir = new Property<String>();
+  private final Property<String> downloadUrl = new Property<String>();
+  private final Property<String> sourceSet = new Property<String>();
+  private final Property<Map> properties = new Property<Map>();
 
   public JpfPluginExtension(Project project) {
-    installDir = project.property(String.class);
     installDir.set(new File(project.getProjectDir(), "/.jpf").getAbsolutePath());
 
-    downloadUrl = project.property(String.class);
     downloadUrl.set(
         "https://babelfish.arc.nasa.gov/trac/jpf/raw-attachment/wiki/projects/jpf-core/jpf-core-r32.zip");
 
-    sourceSet = project.property(String.class);
     sourceSet.set(SOURCE_SET_NAME);
 
-    properties = project.property(Map.class);
     properties.set(Collections.emptyMap());
   }
 
-  public Provider<String> getDownloadUrlProvider() {
+  public Supplier<String> getDownloadUrlSupplier() {
     return downloadUrl;
   }
 
-  public Provider<String> getInstallDirProvider() {
+  public Supplier<String> getInstallDirSupplier() {
     return installDir;
   }
 
-  public Provider<String> getSourceSetProvider() {
+  public Supplier<String> getSourceSetSupplier() {
     return sourceSet;
   }
 
-  public Provider<Map> getPropertiesProvider() {
+  public Supplier<Map> getPropertiesSupplier() {
     return properties;
   }
 

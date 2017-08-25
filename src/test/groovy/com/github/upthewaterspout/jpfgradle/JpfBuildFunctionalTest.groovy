@@ -49,11 +49,14 @@ class JpfBuildFunctionalTest extends Specification {
         defaultBuildFile()
 
         when:
-        BuildResult result = executeTask('test')
+        BuildResult result = executeTask(version,'test')
 
         then:
         result.task(':downloadJpf').outcome == TaskOutcome.SUCCESS
         new File(testProjectDir.getRoot(), ".jpf").exists()
+
+        where:
+          version << ["3.5.1", "4.1"]
     }
 
     def "Adding the jpf plugin generates a jpf.properties file with the correct source and classpath"() {
@@ -63,13 +66,16 @@ class JpfBuildFunctionalTest extends Specification {
         addJPFTest()
 
         when:
-        BuildResult result = executeTask('generateJpfProperties')
+        BuildResult result = executeTask(version,'generateJpfProperties')
 
         then:
         result.task(':generateJpfProperties').outcome == TaskOutcome.SUCCESS
         Properties props = getJpfProperties()
-        toList(props.get("classpath")) == getClasspath(testClasses)
+        toList(props.get("classpath")) == getClasspath(testClasses, version)
         toList(props.get("sourcepath")) == getExpectedTestSourcepath()
+
+        where:
+        version << ["3.5.1", "4.1"]
     }
 
     def "Configuring the source set for jpf targets the correct source set"() {
@@ -79,13 +85,16 @@ class JpfBuildFunctionalTest extends Specification {
         addJPFTest()
 
         when:
-        BuildResult result = executeTask('generateJpfProperties')
+        BuildResult result = executeTask(version,'generateJpfProperties')
 
         then:
         result.task(':generateJpfProperties').outcome == TaskOutcome.SUCCESS
         Properties props = getJpfProperties()
-        toList(props.get("classpath")) == getClasspath(mainClasses)
+        toList(props.get("classpath")) == getClasspath(mainClasses, version)
         toList(props.get("sourcepath")) == getExpectedTestSourcepath()
+
+        where:
+        version << ["3.5.1", "4.1"]
     }
 
     def "Custom properties in configuration are added to jpf.properties"() {
@@ -95,15 +104,18 @@ class JpfBuildFunctionalTest extends Specification {
         addJPFTest()
 
         when:
-        BuildResult result = executeTask('generateJpfProperties')
+        BuildResult result = executeTask(version,'generateJpfProperties')
 
         then:
         result.task(':generateJpfProperties').outcome == TaskOutcome.SUCCESS
         Properties props = getJpfProperties()
         props.get("a") == 'b'
         props.get("x") == 'y'
-        toList(props.get("classpath")) == getClasspath(testClasses)
+        toList(props.get("classpath")) == getClasspath(testClasses, version)
         toList(props.get("sourcepath")) == getExpectedTestSourcepath()
+
+        where:
+        version << ["3.5.1", "4.1"]
     }
 
     def "Project with test using jpf successfully builds and runs"() {
@@ -112,10 +124,13 @@ class JpfBuildFunctionalTest extends Specification {
         addJPFTest()
 
         when:
-        BuildResult result = executeTask('test')
+        BuildResult result = executeTask(version,'test')
 
         then:
         result.task(':test').outcome == TaskOutcome.SUCCESS
+
+        where:
+        version << ["3.5.1", "4.1"]
     }
 
     private void addJPFTest() {
@@ -238,28 +253,37 @@ class JpfBuildFunctionalTest extends Specification {
     }
 
     private BuildResult executeTask(String task) {
+        return executeTask("4.1", task)
+
+    }
+
+    private BuildResult executeTask(String version, String task) {
         BuildResult result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
+                .withProjectDir(testProjectDir.root.absoluteFile)
                 .withArguments('--stacktrace', task)
+                .withGradleVersion(version)
                 .withPluginClasspath()
                 .build()
         System.out.println("OUTPUT=" + result.output)
         return result
     }
 
-    private List<String> getClasspath(String[] classes) {
-        File projectDir = testProjectDir.getRoot();
-        String projectDirPath = projectDir.getAbsolutePath();
-        String jpfJar = new FileNameFinder().getFileNames(projectDirPath, "**/jpf.jar").first();
-        List<String> dirs = new ArrayList();
-        dirs.add(jpfJar);
-        classes.collect { dir -> dirs.add(projectDirPath + "/" + dir)};
+    private List<String> getClasspath(String[] classes, String version) {
+        File projectDir = testProjectDir.getRoot()
+        String projectDirPath = projectDir.toPath().toRealPath().toString()
+        String jpfJar = new FileNameFinder().getFileNames(projectDirPath, "**/jpf.jar").first()
+        List<String> dirs = new ArrayList()
+        dirs.add(jpfJar)
+        if (version.startsWith("3")) {
+            classes = classes.collect {dir -> dir.replace('/java', '')}
+        }
+        classes.collect { dir -> dirs.add(projectDirPath + "/" + dir)}
         return dirs.sort()
     }
 
     private List<String> getExpectedTestSourcepath() {
         File projectDir = testProjectDir.getRoot();
-        String projectDirPath = projectDir.getAbsolutePath();
+        String projectDirPath = projectDir.toPath().toRealPath().toString()
         String[] dirs = [projectDirPath + "/src/main/java",
                          projectDirPath + "/src/test/java"];
         return Arrays.asList(dirs).sort()
