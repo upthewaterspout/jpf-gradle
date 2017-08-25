@@ -18,7 +18,7 @@ See the [jpf-gradle-sample](https://github.com/upthewaterspout/jpf-gradle-sample
 of how to use this plugin in your project.
 ```
 plugins {
-  id "com.github.upthewaterspout.jpf" version "0.2"
+  id "com.github.upthewaterspout.jpf" version "0.3"
 }
 
 jpf {
@@ -28,7 +28,7 @@ jpf {
 #### Optional Configuration
 ```
 plugins {
-  id "com.github.upthewaterspout.jpf" version "0.2"
+  id "com.github.upthewaterspout.jpf" version "0.3"
 }
 
 jpf {

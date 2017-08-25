@@ -22,7 +22,7 @@ plugins {
 import de.undercouch.gradle.tasks.download.Download
 
 group 'com.github.upthewaterspout.jpfgradle'
-version '0.3-SNAPSHOT'
+version '0.4-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
