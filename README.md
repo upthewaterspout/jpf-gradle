@@ -4,7 +4,7 @@ This is a gradle plugin that makes it easier to use [Java Path Finder](https://b
 from within a gradle project, without having to install JPF our configure a jpf.properties with your projects classpath.
 
 ## Usage
-Add this this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
+Add this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
 
 
 By default this plugin will download JPF
@@ -18,7 +18,7 @@ See the [jpf-gradle-sample](https://github.com/upthewaterspout/jpf-gradle-sample
 of how to use this plugin in your project.
 ```
 plugins {
-  id "com.github.upthewaterspout.jpf" version "0.1"
+  id "com.github.upthewaterspout.jpf" version "0.2"
 }
 
 jpf {
@@ -28,7 +28,7 @@ jpf {
 #### Optional Configuration
 ```
 plugins {
-  id "com.github.upthewaterspout.jpf" version "0.1"
+  id "com.github.upthewaterspout.jpf" version "0.2"
 }
 
 jpf {
