@@ -1,7 +1,7 @@
 # Java Path Finder Gradle Plugin
 
 This is a gradle plugin that makes it easier to use [Java Path Finder](https://babelfish.arc.nasa.gov/trac/jpf) (JPF)
-from within a gradle project without having to install JPF our configure a jpf.properties with your projects classpath.
+from within a gradle project without having to install JPF or configure a jpf.properties with your projects classpath.
 
 ## Usage
 Add this plugin in your gradle build using the [configuration](https://plugins.gradle.org/plugin/com.github.upthewaterspout.jpf) from plugins.gradle.org.
